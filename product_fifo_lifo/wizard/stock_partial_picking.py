@@ -53,7 +53,7 @@ class stock_partial_picking(osv.osv_memory):
         return {'cost': move2.product_id.standard_price, 
                 'currency':  False}
 
-    def _partial_move_for(self, cr, uid, move):
+    def _partial_move_for(self, cr, uid, move, context=None):
         partial_move = {
             'product_id' : move.product_id.id,
             'quantity' : move.product_qty if move.state in ('assigned','draft','confirmed') else 0,
