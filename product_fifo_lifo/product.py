@@ -62,15 +62,21 @@ product_uom()
 class product_template(osv.osv):
     _inherit = "product.template"
     _columns = {
-        'standard_price': fields.property(False, type='float', digits_compute=dp.get_precision('Product Price'), view_load=True,
-                                          help="Cost price of the product used for standard stock valuation in accounting and used as a base price on purchase orders.", 
-                                          groups="base.group_user", string="Cost"),
-        'cost_method': fields.property(False, type='selection', view_load=True, selection = [('standard','Standard Price'), ('average','Average Price'), ('fifo', 'FIFO'), ('lifo', 'LIFO')],
+#         'standard_price': fields.property(False, type='float', digits_compute=dp.get_precision('Product Price'), view_load=True,
+#                                           help="Cost price of the product used for standard stock valuation in accounting and used as a base price on purchase orders.", 
+#                                           groups="base.group_user", string="Cost"),
+        'standard_price': fields.float('Cost', digits_compute=dp.get_precision('Product Price'), help="Cost price of the product used for standard stock valuation in accounting and used as a base price on purchase orders.", groups="base.group_user"),
+#         'cost_method': fields.property(False, type='selection', view_load=True, selection = [('standard','Standard Price'), ('average','Average Price'), ('fifo', 'FIFO'), ('lifo', 'LIFO')],
+#             help="""Standard Price: The cost price is manually updated at the end of a specific period (usually every year)
+#                     Average Price: The cost price is recomputed at each incoming shipment
+#                     FIFO Price: The cost price is recomputed at each outgoing shipment FIFO
+#                     LIFO Price: The cost price is recomputed at each outgoing shipment LIFO""", 
+#             string="Costing Method", required=True),
+        'cost_method': fields.selection([('standard','Standard Price'), ('average','Average Price'), ('fifo', 'FIFO'), ('lifo', 'LIFO')],'Costing Method', 
             help="""Standard Price: The cost price is manually updated at the end of a specific period (usually every year)
                     Average Price: The cost price is recomputed at each incoming shipment
                     FIFO Price: The cost price is recomputed at each outgoing shipment FIFO
-                    LIFO Price: The cost price is recomputed at each outgoing shipment LIFO""", 
-            string="Costing Method", required=True),
+                    LIFO Price: The cost price is recomputed at each outgoing shipment LIFO""",required=True),
     }
 product_template()
 
@@ -364,8 +370,12 @@ class product_product(osv.osv):
         return res
 
     _columns = {
-         'valuation':fields.property(False, type='selection', view_load=True, selection=[('manual_periodic', 'Periodical (manual)'),
-                                         ('real_time','Real Time (automated)'),], string = 'Inventory Valuation',
+#         'valuation':fields.property(False, type='selection', view_load=True, selection=[('manual_periodic', 'Periodical (manual)'),
+#                                          ('real_time','Real Time (automated)'),], string = 'Inventory Valuation',
+#                                          help="If real-time valuation is enabled for a product, the system will automatically write journal entries corresponding to stock moves." \
+#                                               "The inventory variation account set on the product category will represent the current inventory value, and the stock input and stock output account will hold the counterpart moves for incoming and outgoing products."
+#                                          , required=True),
+        'valuation':fields.selection([('manual_periodic', 'Periodical (manual)'),('real_time','Real Time (automated)'),], 'Inventory Valuation',
                                          help="If real-time valuation is enabled for a product, the system will automatically write journal entries corresponding to stock moves." \
                                               "The inventory variation account set on the product category will represent the current inventory value, and the stock input and stock output account will hold the counterpart moves for incoming and outgoing products."
                                          , required=True),
